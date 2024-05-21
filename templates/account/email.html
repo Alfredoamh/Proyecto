@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load tailwind_filters %}
+{% load allauth i18n %}
+
+{% block head_title %}
+  {% trans 'E-mail Addresses' %}
+{% endblock %}
+
+{% block content %}
+  <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-[680px]">
+      <div class="bg-white px-6 py-12 shadow rounded-lg sm:px-12 mx-4">
+        <h1 class="max-w-2xl font-bold tracking-tight text-gray-900 text-2xl mb-4">{% trans 'E-mail Addresses' %}</h1>
+
+        {% if emailaddresses %}
+          <p class="max-w-2xl text-gray-900 pt-6 pb-3">Las siguientes direcciones de correo electrónico están asociadas con su cuenta :</p>
+
+          {% url 'account_email' as email_url %}
+
+          {% element form form=form action=email_url method='post' %}
+            {% slot body %}
+              {% csrf_token %}
+              {% for radio in emailaddress_radios %}
+                {% with emailaddress=radio.emailaddress %}
+                  {% element field type='radio' checked=radio.checked name='email' value=emailaddress.email id=radio.id %}
+                    {% slot label %}
+                      {{ emailaddress.email }}
+                      {% if emailaddress.verified %}
+                        {% element badge tags='success,email,verified' %}
+                          <span class="verified font-bold">{% translate 'Verified' %}</span>
+                        {% endelement %}
+                      {% else %}
+                        {% element badge tags='warning,email,unverified' %}
+                          <span class="unverified font-bold">{% translate 'Unverified' %}</span>
+                        {% endelement %}
+                      {% endif %}
+                      {% if emailaddress.primary %}
+                        {% element badge tags='email,primary' %}
+                          <span class="unverified font-bold">{% translate 'Primary' %}</span>
+                        {% endelement %}
+                      {% endif %}
+                    {% endslot %}
+                  {% endelement %}
+                {% endwith %}
+              {% endfor %}
+            {% endslot %}
+            {% slot actions %}
+              <div class="buttonHolder flex gap-2 py-3">
+                <button name="action_primary" type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                  {% trans 'Make Primary' %}
+                </button>
+
+                <button name="action_send" type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 secondary">
+                  {% trans 'Re-send Verification' %}
+                </button>
+
+                <button name="action_remove" type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 danger delete">
+                  {% trans 'Remove' %}
+                </button>
+              </div>
+            {% endslot %}
+          {% endelement %}
+        {% else %}
+          {% include 'account/snippets/warn_no_email.html' %}
+        {% endif %}
+        {% if can_add_email %}
+          <h2 class="max-w-xs text-3xl font-bold tracking-tight text-gray-900 sm:text-2xl mb-4">{% trans 'Add Email Address' %}</h2>
+
+          {% url 'account_email' as action_url %}
+
+          {% element form form=form method='post' action=action_url %}
+            {% slot body %}
+              {% csrf_token %}
+              {{ form|crispy }}
+            {% endslot %}
+            befac
+            {% slot actions %}
+              <button name="action_add" type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                {% trans 'Add Email' %}
+              </button>
+            {% endslot %}
+          {% endelement %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    (function () {
+      let message= "{% trans 'Do you really want to remove the selected e-mail address?' %}"
+      let actions= document.getElementsByName('action_remove')
+      if (actions.length) {
+        actions[0].addEventListener('click', function (e) {
+          if (!confirm(message)) {
+            e.preventDefault()
+          }
+        })
+      }
+    })()
+  </script>
+{% endblock %}

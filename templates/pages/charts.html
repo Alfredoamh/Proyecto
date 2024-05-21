@@ -1,0 +1,65 @@
+{% extends 'base_extendido.html' %}
+{% load static %}   
+
+{% block content_main %} 
+
+  <canvas class="w-100 bg-gray-800/95 rounded-lg p-1" id="myChart" width="900" height="280"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const ctx = document.getElementById('myChart');
+    const regionLabels = ["Región I", "Región II", "Región III", "Región IV", "Región V", "Región VI", "Región VII", "Región VIII", "Región IX", "Región X", "Región XI", "Región XII", "Región XIII", "Región XIV", "Región XV", "Región XVI"];
+
+    console.log({{ mujeres }});
+    console.log({{ hombres }});
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: regionLabels, // eje x
+        datasets: [
+          {
+            label: 'Hombres',
+            data: {{ hombres }}, // eje y
+            lineTension: 0,
+            backgroundColor: "rgba(0, 123, 255, 0.5)",
+            borderColor: "#007bff",
+            borderWidth: 4,
+            pointBackgroundColor: "#007bff",
+          },
+          {
+            label: 'Mujeres',
+            data: {{ mujeres }}, // eje y
+            backgroundColor: "rgba(255, 99, 132, 0.5)",
+            borderColor: "#ff6384",
+            borderWidth: 4,
+            pointBackgroundColor: "#ff6384",
+          }
+        ],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return Number.isInteger(value) ? value : '';
+              }
+            }
+          },
+        },
+        plugins: {
+          legend: {
+            display: 'top',
+          },
+          tooltip: {
+            boxPadding: 3,
+          },
+        },
+      },
+    });
+  </script>
+
+  
+{% endblock content_main %}

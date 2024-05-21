@@ -1,0 +1,117 @@
+{% extends "base_extendido.html" %}
+{% load allauth %}
+{% load i18n %}
+{% block head_title %}
+    Autentificación de dos Factores 
+{% endblock head_title %}
+{% block content_main %}
+
+<div class="flex items-center">
+  <div class="mx-auto max-w-7xl">
+    <div class="relative isolate overflow-hidden bg-gray-900 px-6 py-16 text-center shadow-2xl rounded-xl sm:px-16">
+      <h2 class="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">Autentificación de dos Factores</h2>
+
+      {% if "totp" in MFA_SUPPORTED_TYPES %}
+        {% element panel %}
+          {% slot title %}    
+            <h3 class="mx-auto mt-3 font-bold tracking-tight text-white text-xl">Aplicación de autenticación</h3>
+          {% endslot %}
+          {% slot body %}
+            {% if authenticators.totp %}
+              <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
+                La autenticación mediante una aplicación de autenticación está activa
+              </p>
+            {% else %}
+              <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
+                La autenticación mediante una aplicación de autenticación no está activa
+              </p>
+            {% endif %}
+          {% endslot %}
+          {% slot actions %}
+            {% url 'mfa_deactivate_totp' as deactivate_url %}
+            {% url 'mfa_activate_totp' as activate_url %}
+            <div class="mt-10 flex items-center justify-center gap-x-6">
+              {% if authenticators.totp %}
+                {% element button href=deactivate_url tags="danger,delete,panel" %}
+                  <div class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer hover:bg-gray-300">
+                    Desactivar
+                  </div>
+                {% endelement %}
+              {% else %}
+                {% element button href=activate_url tags="panel" %}
+                  <div class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white w-40 m-auto cursor-pointer mb-5">   
+                    Activar
+                  </div>
+                {% endelement %}
+              {% endif %}
+            </div>
+          {% endslot %}
+        {% endelement %}
+      {% endif %}
+
+      {% if "recovery_codes" in MFA_SUPPORTED_TYPES %}
+        {% with total_count=authenticators.recovery_codes.generate_codes|length unused_count=authenticators.recovery_codes.get_unused_codes|length %}
+          {% element panel %}
+            {% slot title %}
+              <h3 class="mx-auto mt-3 font-bold tracking-tight text-white text-xl">Códigos de recuperación</h3>
+            {% endslot %}
+            {% slot body %}
+              {% if authenticators.recovery_codes %}
+                <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
+                  {% blocktranslate count unused_count=unused_count %}There is {{ unused_count }} out of {{ total_count }} recovery codes available.{% plural %}There are {{ unused_count }} out of {{ total_count }} recovery codes available.{% endblocktranslate %}
+                </p>
+              {% else %}
+                <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
+                  No hay códigos de recuperación configurados
+                </p>
+              {% endif %}
+            {% endslot %}
+              {% if is_mfa_enabled %}
+                {% if authenticators.recovery_codes %}
+                  {% if unused_count > 0 %}
+                    {% slot actions %}
+                      {% url 'mfa_view_recovery_codes' as view_url %}
+                      {% element button href=view_url tags="panel" %}
+                        <div class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer my-5">
+                          Vista
+                        </div>
+                      {% endelement %}
+                    {% endslot %}
+                    {% slot actions %}
+                      {% url 'mfa_download_recovery_codes' as download_url %}
+                      {% element button href=download_url tags="secondary,panel" %}
+                        <div class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer">
+                            Descargar
+                        </div>
+                      {% endelement %}
+                    {% endslot %}
+                  {% endif %}
+                {% endif %}
+                {% slot actions %}
+                  {% url 'mfa_generate_recovery_codes' as generate_url %}
+                  {% element button href=generate_url tags="secondary,panel" %}
+                    <div class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer mt-5">
+                        Generar
+                    </div>
+                  {% endelement %}
+                {% endslot %}
+              {% endif %}
+          {% endelement %}
+        {% endwith %}
+      {% endif %}            
+
+      <svg viewBox="0 0 1024 1024" class="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]" aria-hidden="true">
+        <circle cx="512" cy="512" r="512" fill="url(#827591b1-ce8c-4110-b064-7cb85a0b1217)" fill-opacity="0.7" />
+        <defs>
+          <radialGradient id="827591b1-ce8c-4110-b064-7cb85a0b1217">
+            <stop stop-color="#7775D6" />
+            <stop offset="1" stop-color="#E935C1" />
+          </radialGradient>
+        </defs>
+      </svg>
+
+    </div>
+  </div>
+</div>
+
+{% endblock content_main %}

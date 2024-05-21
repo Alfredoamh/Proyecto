@@ -1,0 +1,43 @@
+{% extends "base_extendido.html" %}
+{% load i18n %}
+{% load allauth %}
+{% block head_title %}
+    {% trans "Verify Your Email Address" %}
+{% endblock head_title %}
+
+{% block content_main %}
+
+  {% if not user.is_authenticated or not user.is_staff %}
+    <div class="absolute w-full h-full z-50 right-0 top-0 bg-gray-900/80 blur-lg backdrop-blur-sm"></div>  
+  {% endif %}
+
+  <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-[680px] z-[99]">
+      <div class="bg-white px-6 py-12 shadow rounded-lg sm:px-12">
+        <h1 class="max-w-2xl font-bold tracking-tight text-gray-900 text-2xl mb-4">
+          {% if not user.is_authenticated or not user.is_staff %}
+            Verifique su dirección de correo electrónico
+          {% else %} 
+            La cuenta se a creada correctamente
+          {% endif %}
+        </h1>
+
+        <div class="space-y-6">
+          {% if user.is_authenticated and user.is_staff %}
+            <p class="max-w-2xl text-gray-900 pt-6">
+              Le hemos enviado un correo electrónico para su verificación.
+            </p>
+          {% else %}   
+            <p class="max-w-2xl text-gray-900 pt-6 z-[60]">
+              Le hemos enviado un correo electrónico para su verificación. Siga el enlace proporcionado para finalizar el proceso de registro. Por favor contáctenos si no lo recibe en unos minutos
+            </p>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock content_main %}
+
+

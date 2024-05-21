@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load tailwind_filters %}
+{% load i18n %}
+{% load allauth %}
+{% block head_title %}
+    {% trans "Sign In" %}
+{% endblock head_title %}
+
+{% block content %}
+
+
+<div class="flex min-h-screen flex-col justify-center sm:px-6 lg:px-8 items-center">
+  <div class="sm:mx-auto sm:w-full sm:max-w-[680px]">
+    <div class="bg-white px-6 py-12 shadow rounded-lg sm:px-12 mx-4">
+      <div class="space-y-6">
+        <p class="max-w-2xl text-gray-900 pt-6">
+            {% blocktranslate %}Your account is protected by two-factor authentication. Please enter an authenticator code:{% endblocktranslate %}
+        </p>
+
+        {% url 'mfa_authenticate' as action_url %}
+        {% element form form=form method="post" action=action_url %}
+          {% slot body %}
+            {% csrf_token %}
+            {{ form|crispy }}
+          {% endslot %}
+          {% slot actions %}
+            <div class="flex justify-between">                
+              <button class="flex cursor-pointer mt-7 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 min-w-40 primary mfa login">
+                {% trans "Sign In" %}
+              </button>
+
+              {% url "account_login" as login_url %}
+              {% element button href=login_url tags="link,secondary,mfa,cancel" %}
+                <div class="flex cursor-pointer mt-7 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 min-w-40">
+                  {% trans "Cancel" %}
+                </div>
+              {% endelement %}
+            </div>
+          {% endslot %}
+        {% endelement %}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

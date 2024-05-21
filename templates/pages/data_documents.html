@@ -1,0 +1,50 @@
+{% extends 'base_extendido.html' %}
+{% load static %}   
+
+{% block content_main %} 
+
+  <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-[680px]">
+      <div class="bg-white px-6 py-12 shadow rounded-lg sm:px-12 mx-4">
+        <h1 class="max-w-2xl font-bold tracking-tight text-gray-900 text-2xl mb-4">Datos Documento</h1>
+
+       <div class="min-w-full tabla-documento overflow-auto"> 
+         
+         {% if html_table %}
+             {{ html_table | safe }} 
+         {% else %}
+             <p class="max-w-2xl text-gray-900 pt-6 pb-3" >No se encontró ningún documento, o no cuenta con las columnas: Correlativo, fecha ingreso, fecha egreso.</p>
+         {% endif %}
+
+          <button class="flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-7 w-52 {% if not html_table %} hidden {% endif %}" id="generate-pdf-button">
+            Generar PDF
+          </button>
+       </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const btnPdf = document.getElementById("generate-pdf-button");
+
+    btnPdf.addEventListener("click", (e) => {
+      const tabla = document.getElementsByTagName("table")[0];
+      console.log(tabla);
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const tableTitle = "Informe de Fechas";
+
+      doc.text(tableTitle, 75, 20);
+
+      let startY = 30;
+      doc.autoTable({ html: tabla, startY });
+
+      doc.output("dataurlnewwindow");
+    });
+  });
+</script>
+
+{% endblock content_main %}

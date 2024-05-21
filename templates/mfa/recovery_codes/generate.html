@@ -1,0 +1,49 @@
+{% extends "base_extendido.html" %}
+{% load i18n %}
+{% load allauth %}
+{% load tailwind_filters %}
+
+{% block head_title %}
+    {% trans "Recovery Codes" %}
+{% endblock head_title %}
+
+{% block content_main %}
+
+<div class="flex min-h-full flex-col justify-center sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-[680px]">
+    <div class="bg-white px-6 py-12 shadow rounded-lg sm:px-12">
+      <h1 class="max-w-2xl font-bold tracking-tight text-gray-900 text-2xl">
+        Códigos de Recuperación
+      </h1>
+      <div class="space-y-6">
+        <p class="max-w-2xl text-gray-900 pt-6"> 
+            {% blocktranslate %}You are about to generate a new set of recovery codes for your account.{% endblocktranslate %}
+            {% if unused_code_count %}
+                {% blocktranslate %}This action will invalidate your existing codes.{% endblocktranslate %}
+            {% endif %}
+            {% blocktranslate %}Are you sure?{% endblocktranslate %}
+        </p>
+        {% url 'mfa_generate_recovery_codes' as action_url %}
+        {% element form method="post" action=action_url no_visible_fields=True %}
+          {% slot body %}
+            {% csrf_token %}
+            {{ form|crispy }}
+          {% endslot %}
+          {% slot actions %}
+            {% setvar tags %}
+              {% if unused_code_count %}
+                danger
+              {% else %}
+              {% endif %}
+            {% endsetvar %}
+              <button type="submit" class="flex cursor-pointer mt-7 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 min-w-40 {{ tags }}">
+                {% trans "Generate" %}
+              </button>  
+          {% endslot %}
+        {% endelement %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content_main %}
