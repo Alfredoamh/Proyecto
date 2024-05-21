@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 asgiref==3.8.1
 crispy-tailwind==1.0.3
 Django==5.0.6
@@ -8,3 +9,15 @@ django-preventconcurrentlogins==0.8.2
 django-tailwind==3.8.0
 sqlparse==0.5.0
 tzdata==2024.1
+=======
+asgiref==3.8.1
+crispy-tailwind==1.0.3
+Django==5.0.6
+django-allauth==0.63.1
+django-axes==6.4.0
+django-crispy-forms==2.1
+django-preventconcurrentlogins==0.8.2
+django-tailwind==3.8.0
+sqlparse==0.5.0
+tzdata==2024.1
+>>>>>>> 5095d6fd2cda6a9836d90979282e397ec36ad8f4
